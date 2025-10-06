@@ -27,21 +27,21 @@ La plataforma utiliza una arquitectura moderna y modular para garantizar escalab
 
 ```mermaid
 graph LR
-  subgraph Frontend
-    FE[React + MUI]
-    FE -->|API REST v1| BE
+  subgraph "Frontend"
+    FE["React + MUI"]
+    FE -->|"API REST v1"| BE
   end
-  subgraph Backend
-    BE[Django REST]
+  subgraph "Backend"
+    BE["Django REST"]
     BE --> DB
-    BE -->|Emails| SMTP
-    BE -->|Calendar| GCal
+    BE -->|"Emails"| SMTP
+    BE -->|"Calendar"| GCal
   end
-  subgraph Database
-    DB[PostgreSQL]
+  subgraph "Database"
+    DB["PostgreSQL"]
   end
-  FE --> UI[Dashboards, KPIs, Compromisos, Reuniones]
-  BE --> Services[Auth, KPIs, Meetings, Commitments, Notifications, Reports]
+  FE --> UI["Dashboards, KPIs, Compromisos, Reuniones"]
+  BE --> Services["Auth, KPIs, Meetings, Commitments, Notifications, Reports"]
 ```
 
 ### 2.3. Estructura de Repositorio (Key Folders)
@@ -159,3 +159,78 @@ Se estima un cronograma inicial de 3-4 sprints (5 días hábiles) para alcanzar 
 - **Sprint 1 (Base):** Autenticación JWT, CRUD de KPI, Inserción de KPIValue, Dashboard inicial (solo KPIs).
 - **Sprint 2 (Core DdD):** Modelos Meeting y Commitment, Flujo Crear Compromiso desde KPI, Notificaciones básicas, Admin KPI Table.
 - **Sprint 3 (QA & Go-Live):** Importación Excel, E2E Tests, Despliegue Staging y Producción, refinamiento de Dashboards.
+
+## 7. Diagramas Adicionales para Visualización
+
+### 7.1. Flujo de Gestión por Excepción
+
+```mermaid
+flowchart TD
+  A["KPI Value Ingresado"] --> B{"¿Valor dentro de umbrales?"}
+  B -->|"Sí"| C["Estado: OK (Verde)"]
+  B -->|"No"| D{"¿Cuál umbral?"}
+  D -->|"Amarillo"| E["Estado: AMARILLO (Alerta)"]
+  D -->|"Rojo"| F["Estado: ROJO (Crítico)"]
+  E --> G["Aparece en Dashboard de Excepción"]
+  F --> G
+  G --> H["Crear Compromiso"]
+  H --> I["Notificar Responsable"]
+  I --> J["Seguimiento y Cierre"]
+```
+
+### 7.2. Arquitectura de Componentes Frontend
+
+```mermaid
+graph TB
+  subgraph "Dashboard Pages"
+    SD["Strategic Dashboard"]
+    TD["Tactical Dashboard"]
+    OD["Operative Dashboard"]
+  end
+  
+  subgraph "Core Components"
+    KC["KPICard"]
+    CF["CommitmentForm"]
+    KB["KanbanBoard"]
+    MT["MeetingTable"]
+  end
+  
+  subgraph "Services"
+    API["API Service"]
+    AUTH["Auth Service"]
+    NOTIF["Notification Service"]
+  end
+  
+  SD --> KC
+  TD --> KC
+  OD --> KC
+  KC --> CF
+  TD --> KB
+  SD --> MT
+  
+  KC --> API
+  CF --> API
+  KB --> API
+  MT --> API
+  
+  API --> AUTH
+  API --> NOTIF
+```
+
+### 7.3. Estados del Compromiso
+
+```mermaid
+stateDiagram-v2
+  [*] --> pending: Crear Compromiso
+  pending --> in_progress: Asignar Responsable
+  in_progress --> completed: Subir Evidencia
+  in_progress --> overdue: Fecha Vencida
+  pending --> overdue: Fecha Vencida
+  overdue --> in_progress: Reasignar
+  completed --> [*]
+  
+  note right of pending: "Compromiso creado, esperando asignación"
+  note right of in_progress: "Trabajando en la acción"
+  note right of overdue: "Fecha límite superada"
+  note right of completed: "Acción completada con evidencia"
+```
