@@ -1,6 +1,6 @@
 # 🚀 Plataforma de Gestión de Diálogos de Desempeño (DdD) - Nutrisco
 
-**Documento Maestro (Parte 1 de 2)** — Versión destinada al Product Owner y como README inicial del proyecto. Contiene la estructura general, diagrama / imagen conceptual y la primera mitad del documento maestro consolidado. La Parte 2 se generará tras validación de esta entrega.
+**Documento Maestro — Versión destinada al Product Owner y como README inicial del proyecto. Contiene la estructura general, diagrama / imagen conceptual y la primera mitad del documento maestro consolidado. 
 
 ## ÍNDICE
 
