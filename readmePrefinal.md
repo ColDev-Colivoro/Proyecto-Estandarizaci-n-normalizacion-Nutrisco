@@ -23,7 +23,7 @@
 17. [Criterios de aceptación y Definition of Done](#17-criterios-de-aceptación-y-definition-of-done-dod)
 18. [Diagramas y flujos](#18-diagramas-y-flujos-mermaid--bloques-listos)
 
-> **Nota:** Este archivo contiene la primera mitad del documento maestro. La Parte 2 incluirá: detalles avanzados del frontend (componentes, hooks, services), especificaciones de import/export Excel, pruebas y QA, despliegue y CI/CD, cronograma detallado por sprint, criterios de aceptación, casos de uso y diagramas UML adicionales (clases, secuencias, despliegue).
+
 
 ## 1. Resumen ejecutivo
 
