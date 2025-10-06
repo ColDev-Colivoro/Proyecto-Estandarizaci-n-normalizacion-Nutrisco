@@ -96,9 +96,22 @@ El motor evalúa KPIValue contra KPI para determinar el estado: OK (Verde), AMAR
 
 ### 4.2. Sistema DdD (Flujo Central)
 
-- **Creación:** Las reuniones DdD se crean automáticamente (cron basado en MeetingType) o manualmente.
+#### Creación de Reuniones
+- **Creación Manual:** El administrador o árbitro del diálogo de desempeño puede crear reuniones DdD cuando lo estime conveniente.
+- **Creación Automática:** Opcionalmente, las reuniones pueden programarse automáticamente (cron basado en MeetingType).
 - **Integración:** Opción de sincronizar con Google Calendar (google_calendar_event_id) para notificar a los participantes.
-- **Interfaz de Reunión:** El UI del DdD presenta un snapshot de los KPIs en alerta en ese momento y permite la creación expedita de Compromisos.
+
+#### Estructura de Sesión DdD
+Cada sesión de DdD se divide en **3 secciones por tiempo**:
+
+1. **Sección 1 - Análisis de KPIs:** Revisión de alertas y desviaciones del período
+2. **Sección 2 - Generación de Compromisos:** Creación de acciones correctivas basadas en las alertas
+3. **Sección 3 - Cierre y Seguimiento:** Registro de log de la reunión, modificaciones y lista de personas presentes
+
+#### Interfaz de Reunión
+- **Snapshot de KPIs:** Presenta KPIs en alerta al momento de la reunión
+- **Creación Expedita:** Permite generar compromisos directamente desde las alertas
+- **Registro de Actas:** Captura notas, modificaciones y asistencia de participantes
 
 ### 4.3. Flujo de Compromisos (Lifecycle)
 
@@ -109,9 +122,25 @@ El motor evalúa KPIValue contra KPI para determinar el estado: OK (Verde), AMAR
 
 ### 4.4. Autenticación y Autorización (Seguridad)
 
+#### Gestión de Autenticación
+- **Base de Datos Actual:** El sistema se conectará a la base de datos existente de Nutrisco para obtener usuarios y roles.
 - **Auth:** JWT (Access + Refresh Token). Preparado para futura integración OAuth2/SSO.
-- **RBAC (Role-Based Access Control):** Los roles (Estratégico, Táctico, Operativo) controlan el acceso a endpoints sensibles (ej. solo Administrador puede hacer CRUD de KPI).
-- **Auditoría:** Todas las acciones críticas (CRUD de KPI, cambios de estado de Compromiso) deben registrarse en logs de auditoría.
+- **Integración de Roles:** Los roles se obtienen desde la base de datos actual y se mapean al sistema DdD.
+
+#### Control de Acceso y Permisos
+**RBAC (Role-Based Access Control):**
+
+- **Administrador/Árbitro:** Acceso completo al sistema, puede crear reuniones y gestionar todo
+- **Jefes de Área:** Pueden modificar únicamente los KPIs de su área asignada
+- **Usuarios Operativos:** Solo lectura de KPIs y creación de compromisos
+
+**Reglas Específicas de KPIs:**
+- ✅ **Modificación:** Solo jefes de área (de su área) y administrador/árbitro
+- ✅ **Visualización de Alertas:** Todos los usuarios pueden ver alertas de todos los KPIs
+- ✅ **Creación de Compromisos:** Todos pueden crear compromisos desde cualquier alerta visible
+
+#### Auditoría
+Todas las acciones críticas (CRUD de KPI, cambios de estado de Compromiso) deben registrarse en logs de auditoría.
 
 ## 5. Interfaces y Dashboards
 
@@ -234,3 +263,77 @@ stateDiagram-v2
   note right of overdue: "Fecha límite superada"
   note right of completed: "Acción completada con evidencia"
 ```
+
+### 7.4. Flujo de Creación de Reunión DdD y Estructura de Sesión
+
+```mermaid
+flowchart TD
+  A["Administrador/Árbitro"] --> B["Decide crear reunión DdD"]
+  B --> C["Configura participantes y fecha"]
+  C --> D["Sincroniza con Google Calendar (opcional)"]
+  D --> E["Envía notificaciones a participantes"]
+  E --> F["Inicia sesión DdD"]
+  
+  F --> G["Sección 1: Análisis de KPIs"]
+  G --> H["Revisar alertas y desviaciones"]
+  H --> I["Sección 2: Generación de Compromisos"]
+  I --> J["Crear acciones correctivas"]
+  J --> K["Sección 3: Cierre y Seguimiento"]
+  K --> L["Registrar log de reunión"]
+  L --> M["Capturar asistencia y modificaciones"]
+  M --> N["Finalizar sesión"]
+  
+  style A fill:#e1f5fe
+  style G fill:#fff3e0
+  style I fill:#fff3e0
+  style K fill:#fff3e0
+```
+
+> **Explicación del diagrama:** Este flujo muestra cómo el administrador o árbitro puede crear reuniones DdD de manera manual cuando lo estime conveniente. Cada sesión se estructura en 3 secciones temporales: análisis, generación de compromisos y cierre con registro completo de la reunión.
+
+### 7.5. Matriz de Permisos por Rol
+
+```mermaid
+graph TB
+  subgraph "Roles y Permisos"
+    ADMIN["Administrador/Árbitro"]
+    JEFE["Jefe de Área"]
+    OPERATIVO["Usuario Operativo"]
+  end
+  
+  subgraph "Acciones KPI"
+    CREAR_KPI["Crear KPI"]
+    EDITAR_KPI["Editar KPI"]
+    VER_ALERTAS["Ver Alertas"]
+  end
+  
+  subgraph "Acciones Reunión"
+    CREAR_REUNION["Crear Reunión"]
+    GESTIONAR_REUNION["Gestionar Reunión"]
+  end
+  
+  subgraph "Acciones Compromiso"
+    CREAR_COMPROMISO["Crear Compromiso"]
+    MODIFICAR_COMPROMISO["Modificar Compromiso"]
+  end
+  
+  ADMIN --> CREAR_KPI
+  ADMIN --> EDITAR_KPI
+  JEFE --> EDITAR_KPI
+  ADMIN --> CREAR_REUNION
+  ADMIN --> GESTIONAR_REUNION
+  
+  ADMIN --> VER_ALERTAS
+  JEFE --> VER_ALERTAS
+  OPERATIVO --> VER_ALERTAS
+  
+  ADMIN --> CREAR_COMPROMISO
+  JEFE --> CREAR_COMPROMISO
+  OPERATIVO --> CREAR_COMPROMISO
+  
+  style ADMIN fill:#ffebee
+  style JEFE fill:#e8f5e8
+  style OPERATIVO fill:#e3f2fd
+```
+
+> **Explicación del diagrama:** Esta matriz muestra claramente los permisos por rol. Los KPIs solo pueden ser modificados por jefes de área (de su área) y administradores, pero todos pueden ver las alertas. Las reuniones solo las puede crear el administrador/árbitro, pero todos pueden crear compromisos.
