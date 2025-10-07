@@ -677,7 +677,7 @@ PR revisado, tests pasan, documentación mínima actualizada, deploy a staging y
 
 ## 18. Diagramas y flujos (Mermaid — bloques listos)
 
-### Diagrama de clases
+### Diagrama de Clases del Sistema DdD
 
 ```mermaid
 classDiagram
@@ -688,13 +688,21 @@ classDiagram
     +Boolean is_active
   }
   
+  class CustomUser {
+    +String username
+    +String role
+    +Area area
+  }
+  
   class KPI {
     +String name
     +String unit
     +String category
+    +Area area
     +Float meta
     +Float umbral_amarillo
     +Float umbral_rojo
+    +String direction
     +Boolean is_active
   }
   
@@ -703,12 +711,14 @@ classDiagram
     +String shift
     +Float value
     +String source
+    +KPI kpi
   }
   
-  class CustomUser {
-    +String username
-    +String role
-    +Area area
+  class MeetingType {
+    +String name
+    +Time schedule_time
+    +Integer duration_minutes
+    +String frequency
   }
   
   class Meeting {
@@ -716,6 +726,8 @@ classDiagram
     +String status
     +Text notes
     +String google_calendar_event_id
+    +MeetingType meeting_type
+    +Area area
   }
   
   class Commitment {
@@ -724,14 +736,26 @@ classDiagram
     +Date due_date
     +String status
     +File attachments
+    +Meeting meeting
+    +KPI kpi
+    +CustomUser responsible
+    +Area area
   }
   
-  Area ||--o{ KPI : contains
-  Area ||--o{ Meeting : belongs_to
-  Area ||--o{ Commitment : belongs_to
-  CustomUser ||--o{ Commitment : responsible
-  KPI ||--o{ KPIValue : has
-  Meeting ||--o{ Commitment : generates
+  Area "1" -- "0..*" KPI : contiene
+  Area "1" -- "0..*" CustomUser : tiene
+  Area "1" -- "0..*" Meeting : organiza
+  Area "1" -- "0..*" Commitment : se_relaciona_con
+  
+  CustomUser "1" -- "0..*" Meeting : participa_en
+  CustomUser "1" -- "0..*" Commitment : es_responsable_de
+  
+  KPI "1" -- "0..*" KPIValue : tiene
+  
+  MeetingType "1" -- "0..*" Meeting : define_tipo_para
+  
+  Meeting "1" -- "0..*" Commitment : genera
+  Commitment "0..1" -- "1" KPI : aborda_kpi
 ```
 
 ### Flujo — creación de compromiso desde KPI en DdD
