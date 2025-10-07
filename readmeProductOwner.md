@@ -43,25 +43,89 @@ La Plataforma de Gestión de Diálogos de Desempeño (DdD) de Nutrisco es una he
 
 A continuación se presenta una representación conceptual de alto nivel de la plataforma. Esta imagen pretende ser la guía visual del sistema para el Product Owner y el equipo técnico.
 
-### Mermaid flowchart (visual placeholder)
+### Diagrama Conceptual del Sistema DdD
 
 ```mermaid
-graph LR
-  subgraph "Frontend"
-    FE["React + MUI"]
-    FE -->|"API"| BE
-  end
-  subgraph "Backend"
-    BE["Django REST"]
-    BE --> DB
-    BE -->|"Emails"| SMTP
-    BE -->|"Calendar"| GCal
-  end
-  subgraph "Database"
-    DB["PostgreSQL"]
-  end
-  FE --> UI["Dashboards, KPIs, Compromisos, Reuniones"]
-  BE --> Services["Auth, KPIs, Meetings, Commitments, Notifications, Reports"]
+graph TB
+    subgraph "📊 FLUJO GENERAL"
+        Informe["📋 Informe por Área<br/>(WR, PHP, Fisherman, Conservas)"]
+        Datos["📈 Datos del Informe<br/>(Producción, Calidad, etc.)"]
+        KPIsArea["📊 KPIs por Área<br/>(Específicos de cada área)"]
+    end
+    
+    subgraph "🤝 SISTEMA DE REUNIONES DdD"
+        subgraph "🎯 DdD ESTRATÉGICO"
+            DDDEstrategico["🏢 DdD Estratégico<br/>9:00-9:30 (30 min)"]
+            Gerencia["👥 Gerencia General<br/>(Todas las áreas)"]
+            KPIsEstr["📊 KPIs Estratégicos<br/>(Todas las áreas)"]
+        end
+        
+        subgraph "⚡ DdD TÁCTICO" 
+            DDDTactico["🏭 DdD Táctico<br/>8:45-9:00 (15 min)"]
+            JefesPlanta["👥 Jefes de Planta + Equipo<br/>(Por área específica)"]
+            KPIDept["📊 KPIs Tácticos<br/>(Por departamento/área)"]
+        end
+        
+        subgraph "⚙️ DdD OPERATIVO"
+            DDDOperativo["👷 DdD Operativo<br/>8:00-8:30 (30 min)"]
+            Operadores["👥 Operadores + Supervisores<br/>(Por turno y área)"]
+            KPTurnos["📊 KPIs Operativos<br/>(Por turno/línea)"]
+        end
+    end
+    
+    subgraph "🚨 SISTEMA DE ALERTAS"
+        FueraNorma["⚠️ KPI Fuera de Norma<br/>(Detecta desviaciones)"]
+        AlertaDD["🚨 Alerta en DdD<br/>(Según reunión activa)"]
+    end
+    
+    subgraph "✅ GESTIÓN DE COMPROMISOS"
+        Compromiso["📋 Crear Compromiso<br/>(Desde alerta)"]
+        Responsable["👤 Asignar Responsable<br/>(Usuario del área)"]
+        Seguimiento["📅 Seguimiento<br/>(Estados y fechas)"]
+    end
+    
+    subgraph "👥 USUARIOS Y PERMISOS"
+        Admin["🔧 Administrador<br/>(Crea KPIs todas áreas)"]
+        JefeArea["👨‍💼 Jefe de Área<br/>(Agrega datos de su área)"]
+        Operativo["👷 Operador<br/>(Participa en DdD operativo)"]
+    end
+    
+    %% Flujos de conexión
+    Informe --> Datos
+    Datos --> KPIsArea
+    KPIsArea --> DDDEstrategico
+    KPIsArea --> DDDTactico  
+    KPIsArea --> DDDOperativo
+    
+    Gerencia --> DDDEstrategico
+    KPIsEstr --> DDDEstrategico
+    DDDEstrategico --> FueraNorma
+    
+    JefesPlanta --> DDDTactico
+    KPIDept --> DDDTactico
+    DDDTactico --> FueraNorma
+    
+    Operadores --> DDDOperativo
+    KPTurnos --> DDDOperativo
+    DDDOperativo --> FueraNorma
+    
+    FueraNorma --> AlertaDD
+    AlertaDD --> Compromiso
+    Compromiso --> Responsable
+    Responsable --> Seguimiento
+    
+    Admin --> KPIsArea
+    JefeArea --> KPIsArea
+    Operativo --> DDDOperativo
+    
+    %% Estilos
+    style Informe fill:#e3f2fd
+    style KPIsArea fill:#fff3e0
+    style DDDEstrategico fill:#ffebee
+    style DDDTactico fill:#e8f5e8
+    style DDDOperativo fill:#f3e5f5
+    style FueraNorma fill:#fff9c4
+    style Compromiso fill:#f1f8e9
 ```
 
 > **Nota visual:** cuando se valide esta parte, generaré una imagen SVG/PNG final (diagramas Mermaid convertidos) que podrá incorporarse al README y al kit de presentación.
@@ -253,16 +317,16 @@ Esta sección amplía y especifica las funcionalidades núcleo del sistema —la
 
 #### Requisitos funcionales
 
-- **Base de Datos Actual:** El sistema se conectará a la base de datos existente de Nutrisco para obtener usuarios y roles.
+- **Base de Datos Actual:** El sistema se conectará a la base de datos existente de Nutrisco para obtener usuarios y roles **por área**.
 - Inicio de sesión mediante JWT (access + refresh).
 - `GET /api/v1/auth/me/` para obtener perfil (id, username, nombre, area, role, permisos).
 - **Integración de Roles:** Los roles se obtienen desde la base de datos actual y se mapean al sistema DdD.
-- Roles básicos: Administrador/Árbitro, Jefe de Área, Operativo; RBAC aplicable a endpoints y UI.
+- Roles básicos: Administrador/Árbitro, Jefe de Área, Operativo; RBAC aplicable a endpoints y UI **según el área y tipo de DdD**.
 - **Permisos Específicos:**
-  - ✅ **KPIs:** Solo jefes de área (de su área) y administrador/árbitro pueden modificar
-  - ✅ **Alertas:** Todos los usuarios pueden ver alertas de todos los KPIs
-  - ✅ **Reuniones:** Solo administrador/árbitro puede crear reuniones DdD
-  - ✅ **Compromisos:** Todos pueden crear compromisos desde alertas visibles
+- ✅ **KPIs:** Solo jefes de área (de su área) y administrador/árbitro pueden modificar **los KPIs de sus respectivas áreas**.
+- ✅ **Alertas:** Todos los usuarios pueden ver alertas de los KPIs **relevantes a su rol y área en los Dashboards correspondientes**.
+- ✅ **Reuniones:** Solo administrador/árbitro puede crear reuniones DdD **(Estratégicas, Tácticas, Operativas)**.
+- ✅ **Compromisos:** Todos pueden crear compromisos desde alertas visibles **en el contexto de un DdD**.
 - Preparación para OAuth2 (Google) y SSO corporativo (implementación posterior).
 - Registro de auditoría: todas las acciones críticas (crear/editar/eliminar KPIs, crear compromisos, cambios de estado) deben quedar en logs con usuario, timestamp y payload mínimo.
 
@@ -277,32 +341,32 @@ Esta sección amplía y especifica las funcionalidades núcleo del sistema —la
 
 #### Modelado y metadatos
 
-Cada KPI posee atributos: name, unit, category, area, meta, umbral_amarillo, umbral_rojo, direction (higher_is_better | lower_is_better), is_active, description, owner_user (opcional).
+Cada KPI posee atributos: `name`, `unit`, `category`, `area`, `meta`, `umbral_amarillo`, `umbral_rojo`, `direction` (higher_is_better | lower_is_better), `is_active`, `description`, `owner_user` (opcional). **Cada KPI está intrínsecamente asociado a un área específica.**
 
-Documentar para cada KPI la regla de interpretación (p. ej. ">= meta" o "<= meta").
+Documentar para cada KPI la regla de interpretación (p. ej. ">= meta" o "<= meta") **y su relevancia para el área a la que pertenece**.
 
 #### Operaciones
 
-- CRUD completo con validaciones (meta > 0 cuando aplique, umbrales consistentes).
+- CRUD completo con validaciones (meta > 0 cuando aplique, umbrales consistentes) **para KPIs de un área específica**.
 - Edición inline de metas y umbrales desde panel administrativo.
-- Import / export desde Excel/CSV con plantilla estandarizada.
+- Import / export desde Excel/CSV con plantilla estandarizada **para KPIs por área**.
 - Importación en background (Celery) y resumen de resultado (creados, actualizados, errores).
 
 #### Detección de desviaciones
 
-Motor que evalúa KPIValue vs KPI y decide estado: OK, AMARILLO, ROJO.
+Motor que evalúa `KPIValue` vs `KPI` **de un área específica** y decide estado: OK, AMARILLO, ROJO.
 
 **Lógica depende de direction. Ejemplos:**
 
 - **higher_is_better:** value >= meta → OK; value < umbral_amarillo → AMARILLO; value < umbral_rojo → ROJO.
 - **lower_is_better:** value <= meta → OK; value > umbral_amarillo → AMARILLO; value > umbral_rojo → ROJO.
 
-Evaluación en cada inserción de KPIValue y job de verificación nocturno para detectar inconsistencias.
+Evaluación en cada inserción de `KPIValue` y job de verificación nocturno para detectar inconsistencias **en los KPIs de cada área**.
 
 #### Alertas
 
-- Notificaciones push (si disponible) + correo electrónico cuando se detecta ROJO o AMARILLO según reglas por rol/area.
-- Dashboard central de "gestión por excepción" que solo muestra KPIs fuera de norma por defecto.
+- Notificaciones push (si disponible) + correo electrónico cuando se detecta ROJO o AMARILLO según reglas por rol/area **y el tipo de DdD**.
+- Dashboard central de "gestión por excepción" que solo muestra KPIs fuera de norma por defecto **según el contexto del DdD (Estratégico, Táctico, Operativo)**.
 
 ### 9.3. Sistema DdD (reuniones) — reglas y flujos
 
@@ -310,21 +374,21 @@ Evaluación en cada inserción de KPIValue y job de verificación nocturno para 
 
 **MeetingType predefinidos:**
 
-- **DdD Estratégico** — 09:00 — 30 min — Todas las áreas — público gerencial.
-- **DdD Táctico** — 08:45 — 15 min — Por área — jefes de planta.
-- **DdD Operativo** — 08:00 — 30 min — Por turno — supervisores/operadores.
+- **DdD Estratégico** — 09:00 — 30 min — **Todas las áreas** — público gerencial.
+- **DdD Táctico** — 08:45 — 15 min — **Por área específica** — jefes de planta.
+- **DdD Operativo** — 08:00 — 30 min — **Por turno y área específica** — supervisores/operadores.
 
 #### Creación y automatización
 
-- **Creación Manual:** El administrador o árbitro del diálogo de desempeño puede crear reuniones DdD cuando lo estime conveniente.
-- **Creación Automática:** Opcionalmente, las reuniones pueden generarse automáticamente (cron) según MeetingType.
-- Cada reunión contiene lista de KPIs en alerta (snapshot) y lista de participantes sugerida por área/rol.
+- **Creación Manual:** El administrador o árbitro del diálogo de desempeño puede crear reuniones DdD **(Estratégicas, Tácticas, Operativas)** cuando lo estime conveniente.
+- **Creación Automática:** Opcionalmente, las reuniones pueden generarse automáticamente (cron) según `MeetingType` **y el área asociada**.
+- Cada reunión contiene lista de KPIs en alerta (snapshot) **específicos del área y tipo de DdD** y lista de participantes sugerida por área/rol.
 
 #### Estructura de Sesión DdD
 Cada sesión de DdD se divide en **3 secciones por tiempo**:
 
-1. **Sección 1 - Análisis de KPIs:** Revisión de alertas y desviaciones del período
-2. **Sección 2 - Generación de Compromisos:** Creación de acciones correctivas basadas en las alertas  
+1. **Sección 1 - Análisis de KPIs por Área:** Revisión de alertas y desviaciones del período **para los KPIs relevantes al DdD**.
+2. **Sección 2 - Generación de Compromisos:** Creación de acciones correctivas basadas en las alertas **de los KPIs presentados en el DdD**.
 3. **Sección 3 - Cierre y Seguimiento:** Registro de log de la reunión, modificaciones y lista de personas presentes
 
 #### Integración con calendario
@@ -335,7 +399,7 @@ Cada sesión de DdD se divide en **3 secciones por tiempo**:
 
 #### Durante la reunión
 
-- Interfaz de reunión: lista de KPIs en alerta, acciones rápidas (crear compromiso desde KPI, anotar notas), historial de compromisos relacionados.
+- Interfaz de reunión: lista de KPIs en alerta **del área y tipo de DdD**, acciones rápidas (crear compromiso desde KPI, anotar notas), historial de compromisos relacionados.
 - Registro acta: notas editables y guardadas vinculadas a Meeting.
 
 ### 9.4. Gestión de Compromisos (lifecycle y automatismos)
@@ -354,8 +418,8 @@ Transiciones registradas en historial con user/timestamp.
 
 #### Automatismos
 
-- Crear compromiso con un click desde KPICard o desde la vista DdD; formulario precargado (description generado a partir del KPI y su último valor).
-- Notificación inmediata al responsible (email + toast si está en sesión).
+- Crear compromiso con un click desde `KPICard` o desde la vista DdD; formulario precargado (description generado a partir del KPI y su último valor) **en el contexto del DdD**.
+- Notificación inmediata al `responsible` (email + toast si está en sesión) **para el compromiso generado en el DdD**.
 - Recordatorios: configurable (por defecto: 3 días antes, 1 día antes, día de vencimiento).
 - Reglas SLA: si priority=high y due_date > límite, enviar escalación a jefe de área.
 
@@ -368,21 +432,21 @@ Transiciones registradas en historial con user/timestamp.
 
 #### Principios
 
-- Gestión por excepción: los dashboards priorizan KPIs en AMARILLO/ROJO.
-- Filtros rápidos: area, turno, fecha, categoría, responsable.
-- Acciones directas desde tarjetas (Crear Compromiso, Ver Tendencia, Exportar).
+- Gestión por excepción: los dashboards priorizan KPIs en AMARILLO/ROJO **según el área y tipo de DdD**.
+- Filtros rápidos: `area`, `turno`, `fecha`, `categoría`, `responsable`.
+- Acciones directas desde tarjetas (Crear Compromiso, Ver Tendencia, Exportar) **para KPIs específicos de un área**.
 
 #### StrategicDashboard
 
-Vista consolidada: KPIs críticos across areas, resumen de compromisos (abiertos/completados), gráficas trend (30/90 días), indicadores de riesgo por área.
+Vista consolidada: **KPIs estratégicos críticos across areas**, resumen de compromisos (abiertos/completados), gráficas trend (30/90 días), indicadores de riesgo por área.
 
 #### TacticalDashboard
 
-Por área: lista de KPIs desviados del área, tablero de compromisos del área (kanban simple por estado), próximos DdD.
+Por área: lista de **KPIs tácticos desviados del área**, tablero de compromisos del área (kanban simple por estado), próximos DdD.
 
 #### OperativeDashboard
 
-Por turno y línea: métricas de turno, notas rápidas, creación expedita de compromisos operativos.
+Por turno y línea: **Métricas operativas del turno/línea**, notas rápidas, creación expedita de compromisos operativos.
 
 ## 10. Interfaces y dashboards (detalle funcional y componentes)
 
@@ -392,9 +456,9 @@ Esta sección traduce los flujos a componentes UI, eventos y props esperadas.
 
 #### Propiedades clave
 
-- **kpi:** { id, name, unit, lastValue, meta, thresholds, direction, area }
+- **kpi:** { `id`, `name`, `unit`, `lastValue`, `meta`, `thresholds`, `direction`, `area` } **(KPI específico de un área)**
 - **status:** OK|AMARILLO|ROJO (calculado)
-- **Callbacks:** onCreateCommitment(kpi, value), onViewTrend(kpiId), onExport(kpiId).
+- **Callbacks:** `onCreateCommitment(kpi, value)`, `onViewTrend(kpiId)`, `onExport(kpiId)`.
 
 #### Comportamiento
 
@@ -404,15 +468,15 @@ Esta sección traduce los flujos a componentes UI, eventos y props esperadas.
 
 ### 10.2. KPIList / KPITable
 
-- **KPIList:** muestra solo KPIs desviados por default; paginación y filtros.
-- **KPITable (admin):** columnas editables inline (meta, umbrales) y acciones CRUD con confirmación.
+- **KPIList:** muestra solo KPIs desviados por default **para el área y tipo de DdD actual**; paginación y filtros.
+- **KPITable (admin):** columnas editables inline (meta, umbrales) y acciones CRUD con confirmación **para KPIs de un área**.
 
 ### 10.3. CommitmentForm (modal / página)
 
 #### Workflow
 
-- Si se abre desde KPICard, pre-cargar area, kpi, description (plantilla).
-- Validar responsible pertenece al area.
+- Si se abre desde `KPICard`, pre-cargar `area`, `kpi`, `description` (plantilla) **en el contexto del DdD**.
+- Validar `responsible` pertenece al `area` **del DdD**.
 - Subir adjuntos en background (pre-signed URL / multipart).
 - Confirmación: enviar notificación y mostrar nuevo compromiso en la lista.
 
@@ -422,11 +486,11 @@ Esta sección traduce los flujos a componentes UI, eventos y props esperadas.
 
 ### 10.4. MeetingScheduler UI
 
-Selector MeetingType, rango de fechas, repetición, lista de participantes sugeridos y opción de sincronizar con GCal.
+Selector `MeetingType`, rango de fechas, repetición, lista de participantes sugeridos **por área** y opción de sincronizar con GCal.
 
 ### 10.5. Panels y widgets reutilizables
 
-FilterBar (fecha, area, turno, category), SmallKPITrend (sparkline), CommitmentKanban, NotificationBell.
+`FilterBar` (`fecha`, `area`, `turno`, `category`), `SmallKPITrend` (sparkline), `CommitmentKanban`, `NotificationBell`.
 
 ## 11. Arquitectura frontend (resumen técnico: componentes, flows y contratos)
 
@@ -482,13 +546,13 @@ interface Commitment {
 
 ### 11.2. Servicios HTTP (ejemplos)
 
-- `kpis.service.ts` → getKpis(filters), createKpi(payload), updateKpi(id, payload), importKpis(file)
-- `commitments.service.ts` → createCommitment(payload), updateCommitment(id, payload), uploadEvidence(id, file)
+- `kpis.service.ts` → `getKpis(filters)` **(filtrado por área)**, `createKpi(payload)` **(asociado a área)**, `updateKpi(id, payload)`, `importKpis(file)` **(para KPIs de un área)**
+- `commitments.service.ts` → `createCommitment(payload)` **(en contexto de DdD)**, `updateCommitment(id, payload)`, `uploadEvidence(id, file)`
 
 ### 11.3. Flujos UX críticos
 
-- Login → cargar AuthContext → fetch áreas y permisos → redirigir a dashboard correspondiente.
-- Dashboard carga KPIs desviados (endpoint `/reports/daily-deviations`) → render KPICards → acciones (crear compromiso).
+- Login → cargar `AuthContext` → fetch áreas y permisos **por rol** → redirigir a dashboard correspondiente **(Estratégico, Táctico o Operativo)**.
+- Dashboard carga KPIs desviados (endpoint `/reports/daily-deviations`) **filtrados por área y tipo de DdD** → render `KPICards` → acciones (crear compromiso).
 
 ## 12. API Backend (Django REST) — endpoints y ejemplos rápidos
 
@@ -526,7 +590,7 @@ Contratos principales (resúmenes), ya listados en la Parte 2 del lienzo; aquí 
 
 ### 12.2. Subir KPIValues (bulk)
 
-**POST** `/api/v1/kpi-values/`
+**POST** `/api/v1/kpi-values/` **(para KPIs de un área)**
 
 ```json
 {
@@ -541,13 +605,13 @@ Contratos principales (resúmenes), ya listados en la Parte 2 del lienzo; aquí 
 
 ### 12.3. Import KPIs (procesamiento async)
 
-**POST** `/api/v1/kpis/import/` → retorna job id; backend encola validación y notifica resultado por email y endpoint `reports/import_logs/{job_id}/`.
+**POST** `/api/v1/kpis/import/` **(para KPIs de un área)** → retorna job id; backend encola validación y notifica resultado por email y endpoint `reports/import_logs/{job_id}/`.
 
 ## 13. Integración Excel (plantillas y reglas de validación)
 
 ### 13.1. Plantilla KPI (hoja)
 
-**Columnas obligatorias:** name, unit, category, area_name, meta, umbral_amarillo, umbral_rojo, direction.
+**Columnas obligatorias:** `name`, `unit`, `category`, `area_name`, `meta`, `umbral_amarillo`, `umbral_rojo`, `direction`. **La `area_name` es crucial para la asignación correcta.**
 
 **Validaciones en pre-check:** tipos numéricos, campos no vacíos, direction válido.
 
@@ -561,9 +625,9 @@ Cada import produce import_log con: total filas, n° creadas, n° actualizadas, 
 
 ### 14.1. Cobertura y suites
 
-- **Unit tests backend** (pytest + django) para: validación KPI rules, upsert KPIValues, creación commitments y notificaciones.
+- **Unit tests backend** (pytest + django) para: validación KPI rules **por área**, upsert KPIValues, creación commitments y notificaciones.
 - **Frontend unit:** jest + react-testing-library para hooks y componentes.
-- **E2E:** Cypress/Playwright con escenarios: login → dashboard → crear compromiso → subir evidencia → cerrar compromiso.
+- **E2E:** Cypress/Playwright con escenarios: login → dashboard **(por rol/área)** → crear compromiso **(en DdD)** → subir evidencia → cerrar compromiso.
 
 ### 14.2. Entorno de pruebas
 
@@ -591,8 +655,8 @@ Lint & tests → build → deploy staging → e2e smoke → deploy production (m
 
 - **Sprint 0 (2 días):** setup repo, docker, CI básico.
 - **Sprint 1 (5 días):** models core, auth, base frontend.
-- **Sprint 2 (5 días):** meetings, notifications, dashboards iniciales, create commitment flow.
-- **Sprint 3 (5 días):** commitments CRUD, import KPIs, admin KPITable, staging deploy.
+- **Sprint 2 (5 días):** meetings, notifications, dashboards iniciales, create commitment flow **en DdD**.
+- **Sprint 3 (5 días):** commitments CRUD, import KPIs **por área**, admin KPITable, staging deploy.
 - **Sprint 4 (2-3 días):** e2e, performance smoke, docs, producción.
 
 (Ver tabla de entregables por día en el canvas si lo deseas.)
@@ -601,9 +665,9 @@ Lint & tests → build → deploy staging → e2e smoke → deploy production (m
 
 ### Criterios clave
 
-- Promesas funcionales: crear compromiso desde KPI con datos pre-cargados y notificación al responsable.
-- Detección de desviación: KPIValue que rompe umbral aparece en el reporte y dashboard.
-- Import KPIs produce resumen con errores claros.
+- Promesas funcionales: crear compromiso desde KPI **en el contexto de un DdD** con datos pre-cargados y notificación al responsable.
+- Detección de desviación: `KPIValue` que rompe umbral aparece en el reporte y dashboard **del DdD correspondiente**.
+- Import KPIs **por área** produce resumen con errores claros.
 - Sincronización GCal crea evento con asistentes.
 - Tests: unit + integration ejecutados; e2e smoke en staging.
 
@@ -670,37 +734,37 @@ classDiagram
   Meeting ||--o{ Commitment : generates
 ```
 
-### Flujo — creación de compromiso desde KPI
+### Flujo — creación de compromiso desde KPI en DdD
 
 ```mermaid
 flowchart LR
-  KPIValue["KPI Value"] -->|"Detect deviation"| Dashboard["Dashboard"]
-  Dashboard -->|"Click Create Commitment"| CommitmentForm["Commitment Form"]
-  CommitmentForm -->|"Submit POST /api/v1/commitments/"| API["API"]
-  API -->|"Create Commitment"| DB["Database"]
-  DB -->|"Notify"| ResponsibleEmail["Responsible Email"]
-  API -->|"Return 201"| Dashboard
-  Dashboard -->|"Show new commitment"| CommitmentsPanel["Commitments Panel"]
+  KPIValue["📈 KPI Value<br/>(De un KPI de un Área)"] -->|"Detecta desviación"| AlertaDdD["🚨 Alerta en Dashboard DdD<br/>(Estratégico/Táctico/Operativo)"]
+  AlertaDdD -->|"Click 'Crear Compromiso'"| CommitmentForm["📋 Formulario de Compromiso<br/>(Pre-cargado con datos del KPI y DdD)"]
+  CommitmentForm -->|"Submit POST /api/v1/commitments/"| API["🌐 API Backend"]
+  API -->|"Crea Compromiso en DB"| DB["🗄️ Base de Datos"]
+  DB -->|"Notifica al Responsable"| ResponsibleEmail["📧 Email al Responsable"]
+  API -->|"Retorna 201 Creado"| AlertaDdD
+  AlertaDdD -->|"Muestra nuevo compromiso"| CommitmentsPanel["✅ Panel de Compromisos del DdD"]
 ```
 
 ### Flujo de Creación de Reunión DdD (Manual por Administrador)
 
 ```mermaid
 flowchart TD
-  ADMIN["Administrador/Árbitro"] --> DECIDE["Decide crear reunión DdD"]
-  DECIDE --> CONFIG["Configura participantes y fecha"]
-  CONFIG --> SYNC["Sincroniza con Google Calendar (opcional)"]
-  SYNC --> NOTIFY["Envía notificaciones a participantes"]
-  NOTIFY --> START["Inicia sesión DdD"]
+  ADMIN["🔧 Administrador/Árbitro"] --> DECIDE["Decide crear reunión DdD<br/>(Estratégico, Táctico u Operativo)"]
+  DECIDE --> CONFIG["⚙️ Configura participantes, fecha y ÁREA"]
+  CONFIG --> SYNC["🗓️ Sincroniza con Google Calendar (opcional)"]
+  SYNC --> NOTIFY["📧 Envía notificaciones a participantes"]
+  NOTIFY --> START["▶️ Inicia sesión DdD"]
   
-  START --> SEC1["Sección 1: Análisis de KPIs"]
-  SEC1 --> REV["Revisar alertas y desviaciones"]
-  REV --> SEC2["Sección 2: Generación de Compromisos"]
-  SEC2 --> CREATE["Crear acciones correctivas"]
-  CREATE --> SEC3["Sección 3: Cierre y Seguimiento"]
-  SEC3 --> LOG["Registrar log de reunión"]
-  LOG --> ASSIST["Capturar asistencia y modificaciones"]
-  ASSIST --> END["Finalizar sesión"]
+  START --> SEC1["1️⃣ Sección 1: Análisis de KPIs por Área"]
+  SEC1 --> REV["🔍 Revisar alertas y desviaciones de los KPIs del área"]
+  REV --> SEC2["2️⃣ Sección 2: Generación de Compromisos"]
+  SEC2 --> CREATE["➕ Crear acciones correctivas basadas en las alertas de los KPIs"]
+  CREATE --> SEC3["3️⃣ Sección 3: Cierre y Seguimiento"]
+  SEC3 --> LOG["📝 Registrar log de reunión"]
+  LOG --> ASSIST["👥 Capturar asistencia y modificaciones"]
+  ASSIST --> END["🏁 Finalizar sesión"]
   
   style ADMIN fill:#e1f5fe
   style SEC1 fill:#fff3e0
@@ -708,32 +772,32 @@ flowchart TD
   style SEC3 fill:#fff3e0
 ```
 
-> **Explicación:** Este diagrama muestra el flujo completo de creación manual de reuniones DdD por el administrador/árbitro, incluyendo las 3 secciones temporales que estructuran cada sesión.
+> **Explicación:** Este diagrama muestra el flujo completo de creación manual de reuniones DdD por el administrador/árbitro, incluyendo la selección del tipo de DdD y el área, y las 3 secciones temporales que estructuran cada sesión, enfatizando la gestión de KPIs por área.
 
 ### Matriz de Permisos y Acceso por Rol
 
 ```mermaid
 graph TB
   subgraph "Roles del Sistema"
-    ADMIN["Administrador/Árbitro<br/>Acceso completo"]
-    JEFE["Jefe de Área<br/>Gestiona su área"]
-    OPERATIVO["Usuario Operativo<br/>Lectura y compromisos"]
+    ADMIN["🔧 Administrador/Árbitro<br/>(Acceso completo, gestiona KPIs de todas las áreas)"]
+    JEFE["👨‍💼 Jefe de Área<br/>(Gestiona KPIs y DdD de su área)"]
+    OPERATIVO["👷 Usuario Operativo<br/>(Lectura de KPIs, crea compromisos en DdD Operativo)"]
   end
   
   subgraph "Permisos KPI"
-    CREAR_KPI["Crear KPI"]
-    EDITAR_KPI["Editar KPI<br/>(Solo su área)"]
-    VER_ALERTAS["Ver Alertas<br/>(Todos los KPIs)"]
+    CREAR_KPI["➕ Crear KPI<br/>(Asociado a un Área)"]
+    EDITAR_KPI["✏️ Editar KPI<br/>(Solo de su Área o todas para Admin)"]
+    VER_ALERTAS["🚨 Ver Alertas<br/>(Según rol y DdD)"]
   end
   
-  subgraph "Permisos Reunión"
-    CREAR_REUNION["Crear Reunión DdD"]
-    GESTIONAR_REUNION["Gestionar Reunión"]
+  subgraph "Permisos Reunión DdD"
+    CREAR_REUNION["🗓️ Crear Reunión DdD<br/>(Estratégica, Táctica, Operativa)"]
+    GESTIONAR_REUNION["⚙️ Gestionar Reunión DdD<br/>(Participantes, KPIs en alerta)"]
   end
   
   subgraph "Permisos Compromiso"
-    CREAR_COMPROMISO["Crear Compromiso"]
-    MODIFICAR_COMPROMISO["Modificar Compromiso"]
+    CREAR_COMPROMISO["➕ Crear Compromiso<br/>(En contexto de DdD y KPI)"]
+    MODIFICAR_COMPROMISO["✏️ Modificar Compromiso<br/>(Asignado o de su Área)"]
   end
   
   ADMIN --> CREAR_KPI
@@ -755,26 +819,26 @@ graph TB
   style OPERATIVO fill:#e3f2fd
 ```
 
-> **Explicación:** Esta matriz detalla los permisos específicos por rol. Los KPIs solo pueden ser modificados por jefes de área (de su área) y administradores, pero todos pueden ver alertas. Las reuniones solo las puede crear el administrador/árbitro.
+> **Explicación:** Esta matriz detalla los permisos específicos por rol. Los KPIs están fuertemente vinculados a las áreas. Los administradores pueden crear y modificar KPIs de todas las áreas, mientras que los jefes de área solo pueden gestionar los KPIs de su área. Todos los usuarios pueden ver las alertas de KPIs relevantes a su contexto de DdD, y pueden crear compromisos dentro de esas reuniones.
 
 ### Integración con Base de Datos Actual
 
 ```mermaid
 graph LR
   subgraph "Base de Datos Nutrisco"
-    DB_ACTUAL["Usuarios y Roles<br/>Existentes"]
+    DB_ACTUAL["Usuarios y Roles<br/>Existentes (por Área)"]
   end
   
   subgraph "Sistema DdD"
     AUTH["Sistema de Autenticación"]
-    RBAC["Control de Acceso<br/>(RBAC)"]
+    RBAC["Control de Acceso<br/>(RBAC por Rol y Área)"]
     MAPPING["Mapeo de Roles"]
   end
   
   subgraph "Funcionalidades"
-    KPI_MGMT["Gestión KPIs"]
-    MEETING_MGMT["Gestión Reuniones"]
-    COMMITMENT_MGMT["Gestión Compromisos"]
+    KPI_MGMT["Gestión KPIs<br/>(Por Área)"]
+    MEETING_MGMT["Gestión Reuniones DdD<br/>(Por Tipo y Área)"]
+    COMMITMENT_MGMT["Gestión Compromisos<br/>(En Contexto DdD)"]
   end
   
   DB_ACTUAL -->|"Conecta y obtiene"| AUTH
@@ -789,4 +853,4 @@ graph LR
   style RBAC fill:#fff3e0
 ```
 
-> **Explicación:** Este diagrama muestra cómo el sistema DdD se integra con la base de datos actual de Nutrisco para obtener usuarios y roles, mapeándolos al sistema de permisos del DdD.
+> **Explicación:** Este diagrama muestra cómo el sistema DdD se integra con la base de datos actual de Nutrisco para obtener usuarios y roles, mapeándolos al sistema de permisos del DdD, enfatizando la granularidad por área y rol.
