@@ -216,14 +216,14 @@ graph TD
         NotificarResponsable --> SeguimientoCierre["✅ Seguimiento y Cierre del Compromiso"]
     end
 
-    style KPIValueIngresado fill:#e3f2fd
-    style EvaluarUmbrales fill:#fff3e0
-    style EstadoKPI fill:#ffebee
-    style AlertaDashboard fill:#fff9c4
-    style CrearCompromiso fill:#f1f8e9
-    style AsignarResponsable fill:#e8f5e8
-    style NotificarResponsable fill:#e3f2fd
-    style SeguimientoCierre fill:#c8e6c9
+style KPIValueIngresado fill:#616161,color:#ffffff
+    style EvaluarUmbrales fill:#616161,color:#ffffff
+    style EstadoKPI fill:#616161,color:#ffffff
+    style AlertaDashboard fill:#616161,color:#ffffff
+    style CrearCompromiso fill:#616161,color:#ffffff
+    style AsignarResponsable fill:#616161,color:#ffffff
+    style NotificarResponsable fill:#616161,color:#ffffff
+    style SeguimientoCierre fill:#616161,color:#ffffff
 ```
 
 ### 7.2. Arquitectura de Componentes Frontend
@@ -302,10 +302,10 @@ flowchart TD
   L --> M["Capturar asistencia y modificaciones"]
   M --> N["Finalizar sesión"]
   
-  style A fill:#e1f5fe
-  style G fill:#fff3e0
-  style I fill:#fff3e0
-  style K fill:#fff3e0
+style A fill:#616161,color:#ffffff
+  style G fill:#616161,color:#ffffff
+  style I fill:#616161,color:#ffffff
+  style K fill:#616161,color:#ffffff
 ```
 
 > **Explicación del diagrama:** Este flujo muestra cómo el administrador o árbitro puede crear reuniones DdD de manera manual cuando lo estime conveniente. Cada sesión se estructura en 3 secciones temporales: análisis, generación de compromisos y cierre con registro completo de la reunión.
@@ -350,9 +350,9 @@ graph TB
   JEFE --> CREAR_COMPROMISO
   OPERATIVO --> CREAR_COMPROMISO
   
-  style ADMIN fill:#ffebee
-  style JEFE fill:#e8f5e8
-  style OPERATIVO fill:#e3f2fd
+style ADMIN fill:#616161,color:#ffffff
+  style JEFE fill:#616161,color:#ffffff
+  style OPERATIVO fill:#616161,color:#ffffff
 ```
 
 > **Explicación del diagrama:** Esta matriz detalla los permisos específicos por rol. Los KPIs están fuertemente vinculados a las áreas. Los administradores pueden crear y modificar KPIs de todas las áreas, mientras que los jefes de área solo pueden gestionar los KPIs de su área. Todos los usuarios pueden ver las alertas de KPIs relevantes a su contexto de DdD, y pueden crear compromisos dentro de esas reuniones.
