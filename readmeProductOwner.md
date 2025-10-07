@@ -27,12 +27,13 @@
 
 ## 1. Resumen ejecutivo
 
-La Plataforma de Gestión de Diálogos de Desempeño (DdD) de Nutrisco es una herramienta centrada en la gestión por excepción: prioriza y expone únicamente los KPIs que están fuera de norma para facilitar la acción inmediata. El núcleo operativo es la reunión llamada Diálogo de Desempeño (DdD) —en la que los jefes de área analizan KPIs en alerta y generan compromisos para su resolución—. El sistema centraliza detección, asignación, seguimiento y cierre de acciones (compromisos), con notificaciones y reportes automáticos.
+La Plataforma de Gestión de Diálogos de Desempeño (DdD) de Nutrisco es una herramienta centrada en la gestión por excepción: prioriza y expone únicamente los KPIs **específicos de cada área** que están fuera de norma para facilitar la acción inmediata. El núcleo operativo es la reunión llamada Diálogo de Desempeño (DdD) —**que puede ser Estratégico, Táctico u Operativo, según el nivel y área**— en la que los jefes de área analizan KPIs en alerta y generan compromisos para su resolución. El sistema centraliza detección, asignación, seguimiento y cierre de acciones (compromisos), con notificaciones y reportes automáticos.
 
 ### Objetivos principales:
 
-- Digitalizar y centralizar el seguimiento de KPIs por área.
-- Agilizar la toma de decisiones mediante alertas y creación rápida de compromisos.
+- Digitalizar y centralizar el seguimiento de **KPIs específicos por área**.
+- Agilizar la toma de decisiones mediante alertas y creación rápida de compromisos **en el contexto de los DdD**.
+- **Gestionar Diálogos de Desempeño (DdD) Estratégicos, Tácticos y Operativos**, adaptados a diferentes niveles organizacionales y áreas.
 - Facilitar la comunicación entre niveles (estratégico, táctico, operativo).
 - Generar trazabilidad y evidencia del cumplimiento de acciones.
 
@@ -238,10 +239,10 @@ class Commitment(models.Model):
 
 **Campos obligatorios en UI al crear compromiso (validación frontend y backend):**
 
-- Descripción (autocompleta desde KPI)
+- Descripción (auto-completada desde KPI **en alerta del DdD**)
 - Acción propuesta
-- Responsable (dropdown de usuarios vinculados al área)
-- Fecha compromiso (due_date)
+- Responsable (dropdown de usuarios vinculados al área **del DdD**)
+- Fecha compromiso (`due_date`)
 - Área relacionada
 
 ## 9. Funcionalidades core (detalle ampliado)
