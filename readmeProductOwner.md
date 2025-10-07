@@ -45,107 +45,7 @@ A continuación se presenta una representación conceptual de alto nivel de la p
 
 ### Diagrama Conceptual del Sistema DdD
 
-```mermaid
-flowchart LR
-  %% --- FLUJO GENERAL ---
-  subgraph FLUJO_GENERAL["📊 FLUJO GENERAL"]
-    direction TB
-    Informe[/"📄 Informe por Área\n(WR, PHP, Fisherman, Conservas)"/]
-    Datos["🗂️ Datos del Informe\n(Producción, Calidad, etc.)"]
-    KPIsArea["📋 KPIs por Área\n(Específicos de cada área)"]
-    Informe --> Datos --> KPIsArea
-  end
-
-  %% --- SISTEMA PRINCIPAL: DdD ESTRATÉGICO / TÁCTICO / OPERATIVO ---
-  subgraph SISTEMA["⚙️ SISTEMA DE DdD"]
-    direction TB
-
-    subgraph ESTRAT["🎯 DdD ESTRATÉGICO"]
-      direction TB
-      Gerencia["👩‍💼 Gerencia General\n(Todas las áreas)"]
-      KPIsEstrat["📈 KPIs Estratégicos\n(Todas las áreas)"]
-      ReuEstrat["🗓️ DdD Estratégico\n9:00-9:30 (30 min)"]
-      Gerencia --> ReuEstrat
-      KPIsEstrat --> ReuEstrat
-    end
-
-    subgraph TACTIC["⚡ DdD TÁCTICO"]
-      direction TB
-      JefesPlanta["🧑‍🏭 Jefes de Planta + Equipo\n(Por área específica)"]
-      KPIsTact["📊 KPIs Tácticos\n(Por departamento/área)"]
-      ReuTact["🗓️ DdD Táctico\n8:45-9:00 (15 min)"]
-      JefesPlanta --> ReuTact
-      KPIsTact --> ReuTact
-    end
-
-    subgraph OPER["🔧 DdD OPERATIVO"]
-      direction TB
-      Operadores["👷 Operadores + Supervisores\n(Por turno y área)"]
-      KPIsOper["📉 KPIs Operativos\n(Por turno/línea)"]
-      ReuOper["🗓️ DdD Operativo\n8:00-8:30 (30 min)"]
-      Operadores --> ReuOper
-      KPIsOper --> ReuOper
-    end
-
-    %% conexiones internas
-    KPIsArea --> KPIsEstrat
-    KPIsArea --> KPIsTact
-    KPIsArea --> KPIsOper
-  end
-
-  %% --- USUARIOS Y PERMISOS (arriba a la derecha en el original) ---
-  subgraph USERS["👥 USUARIOS Y PERMISOS"]
-    direction TB
-    Admin["🔑 Administrador\n(Crea KPIs todas áreas)"]
-    JefeArea["🧾 Jefe de Área\n(Agrega datos de su área)"]
-    Oper["👤 Operador\n(Participa en DdD operativo)"]
-  end
-
-  %% --- SISTEMA DE ALERTAS ---
-  subgraph ALERTS["🚨 SISTEMA DE ALERTAS"]
-    direction TB
-    KPI_Fuera["⚠️ KPI Fuera de Norma\n(Detecta desviaciones)"]
-    AlertaDdD["📣 Alerta en DdD\n(Según reunión activa)"]
-    KPI_Fuera --> AlertaDdD
-  end
-
-  %% Conectar sistema principal con usuarios y alertas (relaciones)
-  Admin --> KPIsEstrat
-  Admin --> KPIsTact
-  Admin --> KPIsOper
-  JefeArea --> KPIsTact
-  Oper --> KPIsOper
-
-  %% Llamada central a alertas desde reuniones
-  ReuEstrat --> KPI_Fuera
-  ReuTact --> KPI_Fuera
-  ReuOper --> KPI_Fuera
-
-  %% --- GESTIÓN DE COMPROMISOS (debajo) ---
-  subgraph GESTION["✅ GESTIÓN DE"]
-    direction TB
-    CrearComp["📝 Crear Compromiso\n(Desde alerta)"]
-    AsignResp["👤 Asignar Responsable\n(Usuario del área)"]
-    Seguimiento["🔁 Seguimiento\n(Estados y fechas)"]
-    CrearComp --> AsignResp --> Seguimiento
-  end
-
-  %% --- Conexiones finales ---
-  AlertaDdD --> CrearComp
-
-  %% Estilos para los nodos "claros"
-  style Informe fill:#e3f2fd
-  style KPIsArea fill:#fff3e0
-  style ReuEstrat fill:#ffebee
-  style ReuTact fill:#e8f5e8
-  style ReuOper fill:#f3e5f5
-  style KPI_Fuera fill:#fff9c4
-  style CrearComp fill:#f1f8e9
-
-  %% Estilos para los subgraphs (mantener el estilo oscuro general)
-  classDef box fill:#2f2f2f,stroke:#555,color:#fff;
-  class SISTEMA,FLUJO_GENERAL,USERS,ALERTS,GESTION box;
-```
+![Diagrama del Sistema DdD](Diagrama.png)
 
 > **Nota visual:** cuando se valide esta parte, generaré una imagen SVG/PNG final (diagramas Mermaid convertidos) que podrá incorporarse al README y al kit de presentación.
 
@@ -809,10 +709,10 @@ flowchart TD
   LOG --> ASSIST["👥 Capturar asistencia y modificaciones"]
   ASSIST --> END["🏁 Finalizar sesión"]
   
-  style ADMIN fill:#e1f5fe
-  style SEC1 fill:#fff3e0
-  style SEC2 fill:#fff3e0
-  style SEC3 fill:#fff3e0
+  style ADMIN fill:#e1f5fe,color:#000000
+  style SEC1 fill:#fff3e0,color:#000000
+  style SEC2 fill:#fff3e0,color:#000000
+  style SEC3 fill:#fff3e0,color:#000000
 ```
 
 > **Explicación:** Este diagrama muestra el flujo completo de creación manual de reuniones DdD por el administrador/árbitro, incluyendo la selección del tipo de DdD y el área, y las 3 secciones temporales que estructuran cada sesión, enfatizando la gestión de KPIs por área.
@@ -857,9 +757,9 @@ graph TB
   JEFE --> CREAR_COMPROMISO
   OPERATIVO --> CREAR_COMPROMISO
   
-style ADMIN fill:#ffebee
-  style JEFE fill:#e8f5e8
-  style OPERATIVO fill:#e3f2fd
+style ADMIN fill:#ffebee,color:#000000
+  style JEFE fill:#e8f5e8,color:#000000
+  style OPERATIVO fill:#e3f2fd,color:#000000
 ```
 
 > **Explicación:** Esta matriz detalla los permisos específicos por rol. Los KPIs están fuertemente vinculados a las áreas. Los administradores pueden crear y modificar KPIs de todas las áreas, mientras que los jefes de área solo pueden gestionar los KPIs de su área. Todos los usuarios pueden ver las alertas de KPIs relevantes a su contexto de DdD, y pueden crear compromisos dentro de esas reuniones.
@@ -891,9 +791,9 @@ graph LR
   RBAC --> MEETING_MGMT
   RBAC --> COMMITMENT_MGMT
   
-style DB_ACTUAL fill:#e8f5e8
-  style AUTH fill:#e3f2fd
-  style RBAC fill:#fff3e0
+style DB_ACTUAL fill:#e8f5e8,color:#000000
+  style AUTH fill:#e3f2fd,color:#000000
+  style RBAC fill:#fff3e0,color:#000000
 ```
 
 > **Explicación:** Este diagrama muestra cómo el sistema DdD se integra con la base de datos actual de Nutrisco para obtener usuarios y roles, mapeándolos al sistema de permisos del DdD, enfatizando la granularidad por área y rol.
