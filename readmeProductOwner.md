@@ -134,13 +134,13 @@ flowchart LR
   AlertaDdD --> CrearComp
 
   %% Estilos para los nodos "claros"
-  style Informe fill:#616161,color:#ffffff
-  style KPIsArea fill:#616161,color:#ffffff
-  style ReuEstrat fill:#616161,color:#ffffff
-  style ReuTact fill:#616161,color:#ffffff
-  style ReuOper fill:#616161,color:#ffffff
-  style KPI_Fuera fill:#616161,color:#ffffff
-  style CrearComp fill:#616161,color:#ffffff
+  style Informe fill:#e3f2fd
+  style KPIsArea fill:#fff3e0
+  style ReuEstrat fill:#ffebee
+  style ReuTact fill:#e8f5e8
+  style ReuOper fill:#f3e5f5
+  style KPI_Fuera fill:#fff9c4
+  style CrearComp fill:#f1f8e9
 
   %% Estilos para los subgraphs (mantener el estilo oscuro general)
   classDef box fill:#2f2f2f,stroke:#555,color:#fff;
@@ -857,9 +857,9 @@ graph TB
   JEFE --> CREAR_COMPROMISO
   OPERATIVO --> CREAR_COMPROMISO
   
-style ADMIN fill:#616161,color:#ffffff
-  style JEFE fill:#616161,color:#ffffff
-  style OPERATIVO fill:#616161,color:#ffffff
+style ADMIN fill:#ffebee
+  style JEFE fill:#e8f5e8
+  style OPERATIVO fill:#e3f2fd
 ```
 
 > **Explicación:** Esta matriz detalla los permisos específicos por rol. Los KPIs están fuertemente vinculados a las áreas. Los administradores pueden crear y modificar KPIs de todas las áreas, mientras que los jefes de área solo pueden gestionar los KPIs de su área. Todos los usuarios pueden ver las alertas de KPIs relevantes a su contexto de DdD, y pueden crear compromisos dentro de esas reuniones.
@@ -891,9 +891,9 @@ graph LR
   RBAC --> MEETING_MGMT
   RBAC --> COMMITMENT_MGMT
   
-style DB_ACTUAL fill:#616161,color:#ffffff
-  style AUTH fill:#616161,color:#ffffff
-  style RBAC fill:#616161,color:#ffffff
+style DB_ACTUAL fill:#e8f5e8
+  style AUTH fill:#e3f2fd
+  style RBAC fill:#fff3e0
 ```
 
 > **Explicación:** Este diagrama muestra cómo el sistema DdD se integra con la base de datos actual de Nutrisco para obtener usuarios y roles, mapeándolos al sistema de permisos del DdD, enfatizando la granularidad por área y rol.

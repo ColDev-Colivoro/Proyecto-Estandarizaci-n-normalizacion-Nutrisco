@@ -108,13 +108,13 @@ flowchart LR
   AlertaDdD --> CrearComp
 
   %% Estilos para los nodos "claros"
-  style Informe fill:#616161,color:#ffffff
-  style KPIsArea fill:#616161,color:#ffffff
-  style ReuEstrat fill:#616161,color:#ffffff
-  style ReuTact fill:#616161,color:#ffffff
-  style ReuOper fill:#616161,color:#ffffff
-  style KPI_Fuera fill:#616161,color:#ffffff
-  style CrearComp fill:#616161,color:#ffffff
+  style Informe fill:#e3f2fd
+  style KPIsArea fill:#fff3e0
+  style ReuEstrat fill:#ffebee
+  style ReuTact fill:#e8f5e8
+  style ReuOper fill:#f3e5f5
+  style KPI_Fuera fill:#fff9c4
+  style CrearComp fill:#f1f8e9
 
   %% Estilos para los subgraphs (mantener el estilo oscuro general)
   classDef box fill:#2f2f2f,stroke:#555,color:#fff;
