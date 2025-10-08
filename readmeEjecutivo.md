@@ -16,7 +16,7 @@ La plataforma utiliza una arquitectura moderna y modular para garantizar escalab
 
 | Capa | Tecnología Principal | Propósito |
 |------|---------------------|-----------|
-| Frontend (FE) | React 18 + TypeScript (Vite) + MUI | Interfaz de usuario, flujos de **KPIs por área**, Dashboards. Migración planificada a TypeScript. |
+| Frontend (FE) | React 19.1.1 + TypeScript (Vite 7.1.7) + TailwindCSS | Interfaz de usuario, flujos de **KPIs por área**, Dashboards. |
 | Backend (BE) | Django 5 + Python 3.11 + DRF | Lógica de negocio, APIs RESTful, seguridad (RBAC). |
 | Base de Datos (DB) | PostgreSQL 15 | Persistencia de datos, histórico de KPIs y auditoría. |
 | Servicios | JWT, Docker, Nginx, Celery | Autenticación segura, Contenerización, Despliegue, Tareas asíncronas (Importación, Notificaciones). |
@@ -30,7 +30,7 @@ flowchart TD
   %% --- ARQUITECTURA TÉCNICA ---
   subgraph TECH["🏗️ ARQUITECTURA TÉCNICA"]
     subgraph FRONTEND["💻 Frontend"]
-      FE["React + MUI"]
+      FE["React + TailwindCSS"]
       PLANNER["📅 Admin Planner<br/>(Calendarizador DdD)"]
       UI["🎨 UI/UX<br/>(Dashboards, Forms)"]
     end

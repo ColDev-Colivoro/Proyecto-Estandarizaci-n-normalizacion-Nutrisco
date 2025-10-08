@@ -12,7 +12,7 @@ La plataforma está construida sobre una arquitectura modular y escalable, compu
 
 | Capa            | Tecnologías Principales                     | Funcionalidad                                        |
 |-----------------|---------------------------------------------|------------------------------------------------------|
-| Frontend        | React 18, TypeScript, Vite, MUI             | Interfaz de usuario, visualización de KPIs y gestión de flujos |
+| Frontend        | React 19.1.1, TypeScript, Vite 7.1.7, TailwindCSS | Interfaz de usuario, visualización de KPIs y gestión de flujos |
 | Backend         | Django 5, Python 3.11, Django REST Framework | Lógica de negocio, APIs RESTful, seguridad           |
 | Base de Datos   | PostgreSQL 15                               | Persistencia de datos, histórico y auditoría          |
 | Servicios       | JWT, Docker, Nginx, Celery                  | Autenticación, contenerización y tareas asíncronas    |
@@ -24,7 +24,7 @@ flowchart TD
   %% --- ARQUITECTURA TÉCNICA ---
   subgraph TECH["🏗️ ARQUITECTURA TÉCNICA"]
     subgraph FRONTEND["💻 Frontend"]
-      FE["React + MUI"]
+      FE["React + TailwindCSS"]
       PLANNER["📅 Admin Planner<br/>(Calendarizador DdD)"]
       UI["🎨 UI/UX<br/>(Dashboards, Forms)"]
     end
