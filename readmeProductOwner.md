@@ -51,7 +51,7 @@ A continuación se presenta una representación conceptual de alto nivel de la p
 
 ## 3. Prototipo visual y validación
 
-**Estado actual:** prototipo al 30% (referencia de diseño y flujos). Inicialmente desarrollado en React + Vite con JS para prototipado rápido; migración planificada a TypeScript.
+**Estado actual:** prototipo al 30% (referencia de diseño y flujos). Desarrollado en React 19.1.1 + Vite 7.1.7 con JavaScript y TailwindCSS para prototipado rápido; el proyecto final migrará a TypeScript.
 
 **Propósitos del prototipo:** validar flujos (crear compromiso desde KPI), pruebas de responsividad en tablet/desktop, validar experiencia de usuario en reuniones DdD.
 
@@ -61,7 +61,7 @@ A continuación se presenta una representación conceptual de alto nivel de la p
 
 ### Stack propuesto:
 
-- **Frontend:** React 18 + TypeScript (Vite)
+- **Frontend:** React 19.1.1 + TypeScript (Vite 7.1.7) + TailwindCSS
 - **Backend:** Django 5 + Python 3.11 + Django REST Framework
 - **Base de datos:** PostgreSQL 15
 - **Autenticación:** JWT; preparado para OAuth2 (Google)
