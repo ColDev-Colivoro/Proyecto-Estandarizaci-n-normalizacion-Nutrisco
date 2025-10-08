@@ -6,7 +6,7 @@ Este documento maestro unificado consolida la estructura, el alcance y las espec
 
 La Plataforma DdD de Nutrisco es una herramienta digital de gestión por excepción, enfocada en digitalizar y agilizar la toma de decisiones. Su objetivo principal es exponer y priorizar los KPIs **específicos de cada área** que están fuera de norma (alerta) para facilitar la acción inmediata a través de la generación de Compromisos (acciones) **dentro del contexto de los Diálogos de Desempeño (DdD) correspondientes (Estratégicos, Tácticos u Operativos)**.
 
-### Exportar a Hojas de cálculo
+
 
 ## 2. Imagen Conceptual y Arquitectura de Alto Nivel
 
